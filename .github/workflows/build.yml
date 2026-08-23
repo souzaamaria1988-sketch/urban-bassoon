@@ -2,6 +2,7 @@ name: Build and Release Fabric Mod
 
 on:
   push:
+    branches: [ "main" ]
     tags: ['v*']
   workflow_dispatch:
 
@@ -20,13 +21,17 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
       - name: Build
         run: gradle build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: examplemod-1.21.11
-          path: build/libs/*.jar
+
+      - name: Get timestamp
+        id: timestamp
+        run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
       - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: dev-${{ steps.timestamp.outputs.ts }}
+          name: Development Build ${{ steps.timestamp.outputs.ts }}
           files: build/libs/*.jar
-          generate_release_notes: true
+          draft: false
+          prerelease: true
+          generate_release_notes: false
