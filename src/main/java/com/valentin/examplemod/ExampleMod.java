@@ -17,14 +17,24 @@ public class ExampleMod implements ModInitializer {
     @Override
     public void onInitialize() {
         PayloadTypeRegistry.playC2S().register(RerollPayload.ID, RerollPayload.CODEC);
+        
         ServerPlayNetworking.registerGlobalReceiver(RerollPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
-                Entity e = context.player().getEntityWorld().getEntityById(payload.villagerId());
-                if (e instanceof VillagerEntity v) {
-                    VillagerRerollHandler.reroll(v, context.player());
+                LOGGER.info("Received reroll request for entity ID: {}", payload.villagerId());
+                
+                Entity entity = context.player().getEntityWorld().getEntityById(payload.villagerId());
+                LOGGER.info("Entity found: {} (type: {})", 
+                    entity != null ? entity.getId() : "null",
+                    entity != null ? entity.getType().toString() : "null");
+                
+                if (entity instanceof VillagerEntity villager) {
+                    VillagerRerollHandler.reroll(villager, context.player());
+                } else {
+                    LOGGER.error("Entity is not a villager!");
                 }
             });
         });
-        LOGGER.info("Villager Reroll Mod 1.21.11 initialized!");
+        
+        LOGGER.info("Villager Reroll Mod initialized!");
     }
 }
