@@ -1,9 +1,1 @@
-{
-  "required": true,
-  "package": "com.valentin.examplemod.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": ["ExampleMixin"],
-  "injectors": {
-    "defaultRequire": 1
-  }
-}
+{"required":true,"package":"com.valentin.examplemod.mixin","compatibilityLevel":"JAVA_21","mixins":["MerchantScreenMixin"],"injectors":{"defaultRequire":1}}
