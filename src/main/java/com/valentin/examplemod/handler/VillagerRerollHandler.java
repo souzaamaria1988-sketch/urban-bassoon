@@ -47,4 +47,17 @@ public class VillagerRerollHandler {
         ExampleMod.LOGGER.info("Reroll completed! Villager has {} offers", 
             villager.getOffers().size());
     }
+}        accessor.invokeFillRecipes(world);
+        ExampleMod.LOGGER.info("Regenerated recipes");
+
+        // Restaura nível e XP explicitamente
+        villager.setVillagerData(data.withLevel(level));
+        villager.setExperience(xp);
+
+        // Envia as novas ofertas ao jogador
+        villager.sendOffers(player, villager.getDisplayName(), level);
+        
+        ExampleMod.LOGGER.info("Reroll completed! Villager has {} offers", 
+            villager.getOffers().size());
+    }
 }
