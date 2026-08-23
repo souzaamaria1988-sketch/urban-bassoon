@@ -1,11 +1,13 @@
-name: Build Fabric Mod
+name: Build and Release Fabric Mod
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*' # Só roda quando você criar uma tag tipo v1.0.0
   workflow_dispatch:
+
+permissions:
+  contents: write # Necessário para criar releases
 
 jobs:
   build:
@@ -21,17 +23,25 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           
-      # Esta action já instala e configura o Gradle automaticamente
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         
-      # O comando agora usa 'gradle' diretamente, não './gradlew'
       - name: Build with Gradle
         run: gradle build
         
-      - name: Upload Mod Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: examplemod-fabric-1.21.1
           path: build/libs/*.jar
           retention-days: 7
+
+      # Cria release apenas quando triggered por tag
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          generate_release_notes: true
+          draft: false
+          prerelease: false
