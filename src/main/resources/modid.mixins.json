@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "com.valentin.examplemod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["ExampleMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
