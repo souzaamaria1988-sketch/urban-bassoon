@@ -3,6 +3,7 @@ package com.valentin.examplemod.mixin;
 import com.valentin.examplemod.ExampleMod;
 import com.valentin.examplemod.network.RerollPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -24,6 +25,7 @@ public abstract class MerchantScreenMixin extends Screen {
         ExampleMod.LOGGER.info("Adding Reroll button to MerchantScreen");
         
         MerchantScreen self = (MerchantScreen)(Object)this;
+        MinecraftClient client = MinecraftClient.getInstance(); // Forma correta de pegar o client
 
         ButtonWidget btn = ButtonWidget.builder(Text.literal("§a⟳ Reroll"), button -> {
             ExampleMod.LOGGER.info("Reroll button clicked!");
@@ -38,8 +40,8 @@ public abstract class MerchantScreenMixin extends Screen {
                     ClientPlayNetworking.send(new RerollPayload(entityId));
                 } else {
                     ExampleMod.LOGGER.error("Merchant is null or not a villager!");
-                    if (self.getClient().player != null) {
-                        self.getClient().player.sendMessage(
+                    if (client.player != null) {
+                        client.player.sendMessage(
                             Text.literal("§c[ExampleMod] §fErro: Não foi possível encontrar o aldeão!"), 
                             false
                         );
@@ -47,8 +49,8 @@ public abstract class MerchantScreenMixin extends Screen {
                 }
             } catch (Exception e) {
                 ExampleMod.LOGGER.error("Error sending reroll packet", e);
-                if (self.getClient().player != null) {
-                    self.getClient().player.sendMessage(
+                if (client.player != null) {
+                    client.player.sendMessage(
                         Text.literal("§c[ExampleMod] §fErro ao tentar executar reroll!"), 
                         false
                     );
@@ -61,4 +63,4 @@ public abstract class MerchantScreenMixin extends Screen {
         this.addDrawableChild(btn);
         ExampleMod.LOGGER.info("Reroll button added successfully");
     }
-            }
+}
