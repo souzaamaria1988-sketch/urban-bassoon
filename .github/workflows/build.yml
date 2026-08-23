@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch: # Permite rodar manualmente pelo site
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,14 +21,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           
+      # Esta action já instala e configura o Gradle automaticamente
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        
+      # O comando agora usa 'gradle' diretamente, não './gradlew'
       - name: Build with Gradle
-        run: ./gradlew build
+        run: gradle build
         
       - name: Upload Mod Artifact
         uses: actions/upload-artifact@v4
