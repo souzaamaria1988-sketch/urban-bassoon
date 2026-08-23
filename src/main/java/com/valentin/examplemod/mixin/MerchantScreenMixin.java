@@ -21,9 +21,12 @@ public abstract class MerchantScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void addRerollButton(CallbackInfo ci) {
+        ExampleMod.LOGGER.info("Adding Reroll button to MerchantScreen");
+        
         MerchantScreen self = (MerchantScreen)(Object)this;
 
         ButtonWidget btn = ButtonWidget.builder(Text.literal("§a⟳ Reroll"), button -> {
+            ExampleMod.LOGGER.info("Reroll button clicked!");
             try {
                 MerchantScreenHandlerAccessor handler = 
                     (MerchantScreenHandlerAccessor) self.getScreenHandler();
@@ -33,17 +36,29 @@ public abstract class MerchantScreenMixin extends Screen {
                     int entityId = villager.getId();
                     ExampleMod.LOGGER.info("Sending reroll for villager ID: {}", entityId);
                     ClientPlayNetworking.send(new RerollPayload(entityId));
-                } else if (merchant != null) {
-                    ExampleMod.LOGGER.error("Merchant is not a villager! Type: {}", 
-                        merchant.getClass().getName());
                 } else {
-                    ExampleMod.LOGGER.error("Merchant is null!");
+                    ExampleMod.LOGGER.error("Merchant is null or not a villager!");
+                    if (self.getClient().player != null) {
+                        self.getClient().player.sendMessage(
+                            Text.literal("§c[ExampleMod] §fErro: Não foi possível encontrar o aldeão!"), 
+                            false
+                        );
+                    }
                 }
             } catch (Exception e) {
                 ExampleMod.LOGGER.error("Error sending reroll packet", e);
+                if (self.getClient().player != null) {
+                    self.getClient().player.sendMessage(
+                        Text.literal("§c[ExampleMod] §fErro ao tentar executar reroll!"), 
+                        false
+                    );
+                }
             }
-        }).dimensions(self.width / 2 + 95, self.height / 2 - 80, 60, 20).build();
+        })
+        .dimensions(10, 10, 80, 20)
+        .build();
 
         this.addDrawableChild(btn);
+        ExampleMod.LOGGER.info("Reroll button added successfully");
     }
-}
+            }
