@@ -23,38 +23,20 @@ public class VillagerRerollHandler {
         ExampleMod.LOGGER.info("Starting reroll for villager {} (level {}, xp {})", 
             villager.getId(), level, xp);
 
-        // Reseta completamente o sistema de restock
         VillagerEntityAccessor accessor = (VillagerEntityAccessor) villager;
         accessor.setLastRestockTime(0L);
         accessor.setRestocksToday(0);
         accessor.setLastRestockCheckTime(0L);
 
-        // Limpa as ofertas atuais
         villager.setOffers(new TradeOfferList());
         ExampleMod.LOGGER.info("Cleared offers");
 
-        // Força regeneração das trades
         accessor.invokeFillRecipes(world);
         ExampleMod.LOGGER.info("Regenerated recipes");
 
-        // Restaura nível e XP explicitamente
         villager.setVillagerData(data.withLevel(level));
         villager.setExperience(xp);
 
-        // Envia as novas ofertas ao jogador
-        villager.sendOffers(player, villager.getDisplayName(), level);
-        
-        ExampleMod.LOGGER.info("Reroll completed! Villager has {} offers", 
-            villager.getOffers().size());
-    }
-}        accessor.invokeFillRecipes(world);
-        ExampleMod.LOGGER.info("Regenerated recipes");
-
-        // Restaura nível e XP explicitamente
-        villager.setVillagerData(data.withLevel(level));
-        villager.setExperience(xp);
-
-        // Envia as novas ofertas ao jogador
         villager.sendOffers(player, villager.getDisplayName(), level);
         
         ExampleMod.LOGGER.info("Reroll completed! Villager has {} offers", 
