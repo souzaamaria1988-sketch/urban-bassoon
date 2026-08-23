@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MerchantScreen.class)
+@Mixin(value = MerchantScreen.class, priority = 1500) // Prioridade máxima
 public abstract class MerchantScreenMixin extends Screen {
 
     protected MerchantScreenMixin(Text title) { super(title); }
@@ -22,11 +22,9 @@ public abstract class MerchantScreenMixin extends Screen {
 
         ButtonWidget btn = ButtonWidget.builder(Text.literal("§a⟳ Reroll"), b -> {
             int id = self.getScreenHandler().syncId;
-            // Usa o entity ID do merchant vinculado ao handler
             ClientPlayNetworking.send(new RerollPayload(id));
         }).dimensions(self.width / 2 + 95, self.height / 2 - 80, 60, 20).build();
 
-        // addDrawableChild é protected em Screen, mas acessível aqui pois estendemos Screen
         this.addDrawableChild(btn);
     }
 }
