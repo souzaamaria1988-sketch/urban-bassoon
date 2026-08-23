@@ -23,14 +23,11 @@ public class ExampleMod implements ModInitializer {
                 LOGGER.info("Received reroll request for entity ID: {}", payload.villagerId());
                 
                 Entity entity = context.player().getEntityWorld().getEntityById(payload.villagerId());
-                LOGGER.info("Entity found: {} (type: {})", 
-                    entity != null ? entity.getId() : "null",
-                    entity != null ? entity.getType().toString() : "null");
                 
                 if (entity instanceof VillagerEntity villager) {
                     VillagerRerollHandler.reroll(villager, context.player());
                 } else {
-                    LOGGER.error("Entity is not a villager!");
+                    LOGGER.error("Entity {} is not a villager!", payload.villagerId());
                 }
             });
         });
