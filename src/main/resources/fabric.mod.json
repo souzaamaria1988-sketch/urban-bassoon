@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "examplemod",
+  "version": "${version}",
+  "name": "Valentin's Example Mod",
+  "description": "Um mod compilado via GitHub Actions!",
+  "authors": ["Valentin"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/examplemod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.valentin.examplemod.ExampleMod"]
+  },
+  "mixins": ["modid.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
