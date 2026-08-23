@@ -16,11 +16,17 @@ public class VillagerRerollHandler {
         int xp = villager.getExperience();
         ServerWorld world = (ServerWorld) villager.getEntityWorld();
 
+        // Reseta completamente o sistema de restock
+        VillagerEntityAccessor accessor = (VillagerEntityAccessor) villager;
+        accessor.setLastRestockTime(0L);
+        accessor.setRestocksToday(0);
+        accessor.setLastRestockCheckTime(0L);
+
         // Limpa as ofertas atuais
         villager.setOffers(new TradeOfferList());
 
-        // Usa o accessor para chamar o método protected
-        ((VillagerEntityAccessor) villager).invokeFillRecipes(world);
+        // Força regeneração das trades
+        accessor.invokeFillRecipes(world);
 
         // Restaura nível e XP explicitamente
         villager.setVillagerData(data.withLevel(level));
