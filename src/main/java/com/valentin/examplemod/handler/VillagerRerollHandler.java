@@ -2,6 +2,8 @@ package com.valentin.examplemod.handler;
 
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.village.VillagerData;
 
 public class VillagerRerollHandler {
@@ -11,15 +13,19 @@ public class VillagerRerollHandler {
         VillagerData data = villager.getVillagerData();
         int level = data.level();
         int xp = villager.getExperience();
+        ServerWorld world = (ServerWorld) villager.getEntityWorld();
 
-        // Limpa e regenera trades mantendo profissão/nível
-        villager.resetTrades();
+        // Limpa as ofertas atuais
+        villager.setOffers(new net.minecraft.village.TradeOfferList());
+
+        // Regenera as recipes/offers baseadas na profissão e nível
+        villager.fillRecipes(world);
 
         // Restaura nível e XP explicitamente
         villager.setVillagerData(data.withLevel(level));
         villager.setExperience(xp);
 
-        // Sincroniza novas ofertas com o cliente
-        villager.sendOffers(player, villager.getOffers(), level);
+        // Envia as novas ofertas ao jogador (assinatura correta: player, Text, int)
+        villager.sendOffers(player, villager.getDisplayName(), level);
     }
 }
