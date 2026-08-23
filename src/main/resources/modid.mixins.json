@@ -4,10 +4,11 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "MerchantScreenMixin",
+    "MerchantScreenHandlerAccessor",
     "VillagerEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "priority": 1500
+  "priority": 2000
 }
