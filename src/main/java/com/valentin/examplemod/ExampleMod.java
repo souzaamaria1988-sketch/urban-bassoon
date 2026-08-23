@@ -19,8 +19,10 @@ public class ExampleMod implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(RerollPayload.ID, RerollPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(RerollPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
-                Entity e = context.player().getWorld().getEntityById(payload.villagerId());
-                if (e instanceof VillagerEntity v) VillagerRerollHandler.reroll(v, context.player());
+                Entity e = context.player().getEntityWorld().getEntityById(payload.villagerId());
+                if (e instanceof VillagerEntity v) {
+                    VillagerRerollHandler.reroll(v, context.player());
+                }
             });
         });
         LOGGER.info("Villager Reroll Mod 1.21.11 initialized!");
