@@ -3,10 +3,10 @@ package com.valentin.examplemod.handler;
 import com.valentin.examplemod.ExampleMod;
 import com.valentin.examplemod.mixin.VillagerEntityAccessor;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
@@ -14,7 +14,6 @@ public class VillagerRerollHandler {
     public static void reroll(VillagerEntity villager, ServerPlayerEntity player) {
         if (villager == null || villager.isDead()) {
             player.sendMessage(Text.literal("§c[ExampleMod] §fErro: Aldeão não encontrado!"), false);
-            ExampleMod.LOGGER.error("Villager is null or dead");
             return;
         }
 
@@ -24,8 +23,6 @@ public class VillagerRerollHandler {
         ServerWorld world = (ServerWorld) villager.getEntityWorld();
 
         player.sendMessage(Text.literal("§e[ExampleMod] §fIniciando reroll do aldeão..."), false);
-        ExampleMod.LOGGER.info("Starting reroll for villager {} (level {}, xp {})", 
-            villager.getId(), level, xp);
 
         VillagerEntityAccessor accessor = (VillagerEntityAccessor) villager;
         accessor.setLastRestockTime(0L);
@@ -33,20 +30,26 @@ public class VillagerRerollHandler {
         accessor.setLastRestockCheckTime(0L);
 
         villager.setOffers(new TradeOfferList());
-        player.sendMessage(Text.literal("§a[ExampleMod] §fOfertas antigas limpas!"), false);
-        ExampleMod.LOGGER.info("Cleared offers");
-
+        
+        // Gera as novas ofertas no aldeão
         accessor.invokeFillRecipes(world);
-        player.sendMessage(Text.literal("§a[ExampleMod] §fNovas ofertas geradas!"), false);
-        ExampleMod.LOGGER.info("Regenerated recipes");
 
+        // Restaura nível e XP
         villager.setVillagerData(data.withLevel(level));
         villager.setExperience(xp);
 
-        villager.sendOffers(player, villager.getDisplayName(), level);
+        // 🎯 ATUALIZAÇÃO SEM FECHAR A TELA:
+        // Em vez de sendOffers (que reabre a tela), atualizamos o ScreenHandler atual
+        if (player.currentScreenHandler instanceof MerchantScreenHandler merchantHandler) {
+            merchantHandler.setOffers(villager.getOffers());
+            player.sendMessage(Text.literal("§a[ExampleMod] §fReroll completo! §e" + 
+                villager.getOffers().size() + " §fnovas ofertas! ✓"), false);
+        } else {
+            // Fallback: se por algum motivo não for um MerchantScreenHandler, usa o método tradicional
+            villager.sendOffers(player, villager.getDisplayName(), level);
+            player.sendMessage(Text.literal("§a[ExampleMod] §fReroll feito (tela recarregada)."), false);
+        }
         
-        int offerCount = villager.getOffers().size();
-        player.sendMessage(Text.literal("§a[ExampleMod] §fReroll completo! §e" + offerCount + " §fnovas ofertas disponíveis! ✓"), false);
-        ExampleMod.LOGGER.info("Reroll completed! Villager has {} offers", offerCount);
+        ExampleMod.LOGGER.info("Reroll completed for villager {}", villager.getId());
     }
-}
+} 
