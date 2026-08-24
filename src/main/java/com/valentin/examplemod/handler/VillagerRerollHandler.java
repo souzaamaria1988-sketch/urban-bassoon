@@ -38,7 +38,8 @@ public class VillagerRerollHandler {
         player.closeHandledScreen();
 
         // 🎯 REABRE NO PRÓXIMO TICK (efeito "piscar")
-        player.getServer().execute(() -> {
+        // Pegamos o servidor pelo ServerWorld em vez do player
+        world.getServer().execute(() -> {
             villager.sendOffers(player, villager.getDisplayName(), level);
         });
 
