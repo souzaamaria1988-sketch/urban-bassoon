@@ -1,40 +1,51 @@
-package com.valentin.examplemod.mixin;
+package com.valentin.examplemod.handler;
 
 import com.valentin.examplemod.ExampleMod;
-import com.valentin.examplemod.network.RerollPayload;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.MerchantScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import com.valentin.examplemod.mixin.VillagerEntityAccessor;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.VillagerData;
 
-@Mixin(value = MerchantScreen.class, priority = 2000)
-public abstract class MerchantScreenMixin extends Screen {
+public class VillagerRerollHandler {
+    public static void reroll(VillagerEntity villager, ServerPlayerEntity player) {
+        if (villager == null || villager.isDead()) {
+            player.sendMessage(Text.literal("§c[ExampleMod] §fErro: Aldeão não encontrado!"), false);
+            return;
+        }
 
-    protected MerchantScreenMixin(Text title) { super(title); }
+        VillagerData data = villager.getVillagerData();
+        int level = data.level();
+        int xp = villager.getExperience();
+        ServerWorld world = (ServerWorld) villager.getEntityWorld();
 
-    @Inject(method = "init", at = @At("TAIL"))
-    private void addRerollButton(CallbackInfo ci) {
-        MerchantScreen self = (MerchantScreen)(Object)this;
-        MinecraftClient client = MinecraftClient.getInstance();
+        player.sendMessage(Text.literal("§e[ExampleMod] §fIniciando reroll..."), false);
 
-        // Calcula a posição da GUI (276x166 pixels, sempre centralizada na tela)
-        int backgroundWidth = 276;
-        int backgroundHeight = 166;
-        int guiX = (this.width - backgroundWidth) / 2;
-        int guiY = (this.height - backgroundHeight) / 2;
+        VillagerEntityAccessor accessor = (VillagerEntityAccessor) villager;
+        accessor.setLastRestockTime(0L);
+        accessor.setRestocksToday(0);
+        accessor.setLastRestockCheckTime(0L);
 
-        // Botão na área do resultado da trade, um pouco acima
-        int buttonX = guiX + 168;
-        int buttonY = guiY + 28;
+        villager.setOffers(new TradeOfferList());
+        accessor.invokeFillRecipes(world);
 
-        ButtonWidget btn = ButtonWidget.builder(Text.literal("§a⟳ Reroll"), button -> {
-            try {
+        villager.setVillagerData(data.withLevel(level));
+        villager.setExperience(xp);
+
+        player.closeHandledScreen();
+
+        world.getServer().execute(() -> {
+            villager.sendOffers(player, villager.getDisplayName(), level);
+        });
+
+        player.sendMessage(Text.literal("§a[ExampleMod] §fReroll completo! §e" + 
+            villager.getOffers().size() + " §fnovas ofertas! ✓"), false);
+        
+        ExampleMod.LOGGER.info("Reroll completed for villager {}", villager.getId());
+    }
+}            try {
                 int entityId = ExampleMod.lastInteractedMerchantId;
                 
                 if (entityId != -1) {
