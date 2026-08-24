@@ -23,26 +23,28 @@ public class VillagerRerollHandler {
 
         player.sendMessage(Text.literal("§e[ExampleMod] §fIniciando reroll..."), false);
 
-        // Reseta os contadores de restock
         VillagerEntityAccessor accessor = (VillagerEntityAccessor) villager;
         accessor.setLastRestockTime(0L);
         accessor.setRestocksToday(0);
         accessor.setLastRestockCheckTime(0L);
 
-        // Limpa e regenera as ofertas
         villager.setOffers(new TradeOfferList());
         accessor.invokeFillRecipes(world);
 
-        // Restaura nível e XP
         villager.setVillagerData(data.withLevel(level));
         villager.setExperience(xp);
 
-        // 🎯 FECHA E REABRE A TELA (efeito "piscar")
-        villager.sendOffers(player, villager.getDisplayName(), level);
+        // 🎯 FECHA A TELA ATUAL
+        player.closeHandledScreen();
+
+        // 🎯 REABRE NO PRÓXIMO TICK (efeito "piscar")
+        player.getServer().execute(() -> {
+            villager.sendOffers(player, villager.getDisplayName(), level);
+        });
 
         player.sendMessage(Text.literal("§a[ExampleMod] §fReroll completo! §e" + 
             villager.getOffers().size() + " §fnovas ofertas! ✓"), false);
         
         ExampleMod.LOGGER.info("Reroll completed for villager {}", villager.getId());
     }
-            }
+}
