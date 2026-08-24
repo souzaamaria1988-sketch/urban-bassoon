@@ -9,17 +9,12 @@ import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = MerchantScreen.class, priority = 2000)
 public abstract class MerchantScreenMixin extends Screen {
-
-    // Acessa as coordenadas da GUI (canto superior esquerdo)
-    @Shadow protected int x;
-    @Shadow protected int y;
 
     protected MerchantScreenMixin(Text title) { super(title); }
 
@@ -28,12 +23,15 @@ public abstract class MerchantScreenMixin extends Screen {
         MerchantScreen self = (MerchantScreen)(Object)this;
         MinecraftClient client = MinecraftClient.getInstance();
 
-        // 🎯 Posição: na área do resultado da trade, um pouco mais para cima
-        // A GUI da MerchantScreen tem 276x166 pixels
-        // O slot de output fica em ~x+186, y+58
-        // Colocamos o botão um pouco acima: y+30
-        int buttonX = this.x + 168;
-        int buttonY = this.y + 28;
+        // Calcula a posição da GUI (276x166 pixels, sempre centralizada na tela)
+        int backgroundWidth = 276;
+        int backgroundHeight = 166;
+        int guiX = (this.width - backgroundWidth) / 2;
+        int guiY = (this.height - backgroundHeight) / 2;
+
+        // Botão na área do resultado da trade, um pouco acima
+        int buttonX = guiX + 168;
+        int buttonY = guiY + 28;
 
         ButtonWidget btn = ButtonWidget.builder(Text.literal("§a⟳ Reroll"), button -> {
             try {
@@ -60,4 +58,4 @@ public abstract class MerchantScreenMixin extends Screen {
         this.addDrawableChild(btn);
         ExampleMod.LOGGER.info("Reroll button added at ({}, {})", buttonX, buttonY);
     }
-            } 
+}
