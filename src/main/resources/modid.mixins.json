@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.valentin.examplemod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MerchantScreenMixin",
+    "MerchantScreenHandlerAccessor",
+    "VillagerEntityAccessor",
+    "ClientPlayerInteractionManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "priority": 2000
+}
