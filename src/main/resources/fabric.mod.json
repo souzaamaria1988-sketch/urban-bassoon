@@ -1,20 +1,30 @@
 {
-  "schemaVersion": 1,
-  "id": "examplemod",
-  "version": "${version}",
-  "name": "Villager Reroll",
-  "description": "Reroll villager trades without losing level or profession",
-  "authors": ["Valentin"],
-  "license": "MIT",
-  "environment": "*",
-  "entrypoints": {
-    "main": ["com.valentin.examplemod.ExampleMod"]
-  },
-  "mixins": ["modid.mixins.json"],
-  "depends": {
-    "fabricloader": ">=0.16.0",
-    "minecraft": "~1.21.11",
-    "java": ">=21",
-    "fabric-api": "*"
-  }
+	"schemaVersion": 1,
+	"id": "instant-furnace",
+	"version": "${version}",
+	"name": "Instant Furnace",
+	"description": "Torna todas as fornalhas instantâneas no Minecraft 1.17.1",
+	"authors": [
+		"SeuNome"
+	],
+	"contact": {
+		"homepage": "https://github.com/seu-usuario/instant-furnace"
+	},
+	"license": "MIT",
+	"icon": "assets/instant-furnace/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.instantfurnace.InstantFurnaceMod"
+		]
+	},
+	"mixins": [
+		"instant-furnace.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.17.1",
+		"java": ">=16",
+		"fabric-api": "*"
+	}
 }
