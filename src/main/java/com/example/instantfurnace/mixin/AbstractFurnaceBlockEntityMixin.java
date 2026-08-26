@@ -2,6 +2,7 @@ package com.example.instantfurnace.mixin;
 
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,6 +25,8 @@ public abstract class AbstractFurnaceBlockEntityMixin {
     @Shadow protected abstract void setStack(int slot, ItemStack stack);
     
     @Shadow protected abstract ItemStack removeStack(int slot, int count);
+    
+    @Shadow protected abstract Recipe<?> getRecipeFor(ItemStack item);
 
     @Inject(method = "canCraft", at = @At("HEAD"), cancellable = true)
     private void instantCook(CallbackInfoReturnable<Boolean> cir) {
@@ -41,11 +44,17 @@ public abstract class AbstractFurnaceBlockEntityMixin {
             // Remove o ingrediente do slot de entrada
             this.removeStack(0, 1);
             
+            // Obtém a receita e o resultado cozido
+            Recipe<?> recipe = this.getRecipeFor(itemStack);
+            ItemStack result = recipe != null ? recipe.craft(null) : ItemStack.EMPTY;
+            
             // Adiciona o resultado cozido ao slot de saída
-            if (itemStack2.isEmpty()) {
-                this.setStack(2, itemStack.getCraftResult().getDefaultStack());
-            } else if (itemStack2.getItem() == itemStack.getCraftResult().getItem()) {
-                itemStack2.increment(1);
+            if (!result.isEmpty()) {
+                if (itemStack2.isEmpty()) {
+                    this.setStack(2, result.copy());
+                } else if (ItemStack.areItemsEqual(itemStack2, result)) {
+                    itemStack2.increment(1);
+                }
             }
         }
         ci.cancel();

@@ -1,28 +1,59 @@
-# Gradle
+```
+# Dependencies
 .gradle/
 build/
-logs/
 
-# Eclipse
-.classpath
-.project
-.settings/
-
-# IntelliJ IDEA
-.idea/
-*.iml
-*.iws
-*.ipr
-out/
-
-# VS Code
-.vscode/
-
-# Mac OS
-.DS_Store
-
-# Java
+# Compiled files
 *.class
 *.jar
 *.war
 *.ear
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python (if present)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.mypy_cache/
+.pytest_cache/
+
+# Node (if present)
+node_modules/
+
+# Java specific build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle
+.gradle/
+build/
+!gradlew
+```
